@@ -89,8 +89,10 @@ footer{margin-top:64px;padding-top:16px;border-top:1px solid var(--line);color:v
 
 <section class="loader noprint" id="loader" aria-label="Choose your tracker file">
   <p><b>Build the report with your own plans</b></p>
-  <p class="note" id="loaderNote">Save your HomeLoan_Tracker.xlsx in Excel (Ctrl+S), then choose it here, or drag it onto this box.</p>
-  <label class="btn big" for="file" style="cursor:pointer;display:inline-block">Choose my tracker file</label>
+  <p class="note" id="loaderNote">Open the workbook, change your plans and let it save, then choose it here (or drag it onto this box). This page cannot read OneDrive by itself, because OneDrive asks for a sign-in first.</p>
+  <a class="btn" id="openWb" href="#" target="_blank" rel="noopener" hidden>1. Open the shared workbook in OneDrive</a>
+  <span class="note" id="signinNote" hidden>If OneDrive asks you to sign in, use the email address the workbook was shared with. For a Gmail address OneDrive sends a one-time code to that inbox. Once the workbook opens, edit it, wait for it to save, then come back here. On a phone, step 2 lists your OneDrive files; if it does not, open the OneDrive app once and sign in there.</span>
+  <label class="btn big" for="file" style="cursor:pointer;display:inline-block">2. Choose my tracker file</label>
   <input id="file" type="file" accept=".xlsx,.xlsm">
   <span class="note" id="loadStatus"></span>
   <span style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="refreshBtn" type="button" hidden>Refresh from the same file</button><button class="btn" id="saveBtn" type="button" hidden>Save report as a file to share</button><button class="btn" id="printBtn" type="button" hidden>Print or save as PDF</button></span>
@@ -268,6 +270,7 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
 /*XLSXEND*/</script>
 <script>
 const LB = {"status": "Input check", "bal": "Balance owed now (₹)", "rate": "Interest rate now (% a year)", "emi": "Monthly EMI now (₹)", "day": "EMI is debited on day of month", "start": "First month to project (month-end)", "cap": "Most I can comfortably pay each month, both loans (₹)", "cash_now": "Cash I can put in right now (₹)", "cash_12": "More cash I expect within 12 months (₹)", "alt": "Return I could earn elsewhere (% a year, after tax)", "preset": "Start from (pick from the list)", "rename": "Rename this plan (optional)", "include": "Include in the report? (Yes / No)", "a_extra": "Add every month (₹)", "a_lump": "One-time prepayment (₹)", "a_lumpm": "…paid in month # (1 = this month)", "a_emid": "Change EMI by (₹, minus to lower)", "a_emim": "…EMI change from month #", "a_rated": "Rate moves by (points, minus if it falls)", "a_ratem": "…rate move from month #", "a_step": "EMI rises each year by (%)", "e_name": "Name used", "e_extra": "Uses: extra every month", "e_lump": "Uses: one-time prepayment", "e_lumpm": "Uses: prepayment month", "e_emid": "Uses: EMI change", "e_emim": "Uses: EMI change from month", "e_rated": "Uses: rate move", "e_ratem": "Uses: rate move from month", "e_step": "Uses: yearly EMI rise", "r_pay": "Regular payment per month (₹)", "r_now": "Cash needed now (₹)", "r_12": "Cash needed in months 2-12 (₹)", "sq_months": "Today's course: months left", "sq_end": "Today's course: debt-free in", "sq_int": "Today's course: interest from here (₹)", "pl_months": "This plan: months left", "pl_end": "This plan: debt-free in", "pl_int": "This plan: interest from here (₹)", "pl_paid": "This plan: total you pay from here (₹)", "sv_int": "Interest saved (₹)", "sv_months": "Months sooner", "outlay": "Extra cash you put in (₹)", "per": "Interest saved per ₹1 put in", "c_pay": "BOTH LOANS: regular payment per month (₹)", "c_pay_diff": "…compared with today (₹ per month)", "c_now": "BOTH LOANS: cash needed now (₹)", "c_12": "…cash needed in months 2-12 (₹)", "c_int": "BOTH LOANS: interest from here (₹)", "c_sv": "…interest saved (₹)", "c_end": "BOTH LOANS: debt-free in", "c_sooner": "…months sooner", "c_gain": "Better or worse than investing instead (₹, at the end of today's course)", "c_fit": "Fits my monthly limit?", "c_cash": "Fits my cash?", "c_msg": "Check"};
+const WB_URL = "https://1drv.ms/x/c/120498fa02c5df9d/IQBczuMzH0zcTo0gAr8oK9FDAR2YeFaR27ZLaTRIvrTkddo?e=su70Jb";
 const SNAP = /*SNAPSTART*/null/*SNAPEND*/;
 const MS = "/*SNAP" + "START*/", ME = "/*SNAP" + "END*/", XS = "/*XLSX" + "START*/", XE = "/*XLSX" + "END*/";
 const PRISTINE = "<!doctype html>\n<html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\"></head><body>" + document.body.innerHTML + "</body></html>";
@@ -736,6 +739,7 @@ $("saveBtn").onclick = () => {
     const url = URL.createObjectURL(new Blob([html], {type: "text/html"})), l = document.createElement("a"); l.href = url; l.download = "HomeLoan_Report_" + new Date().toISOString().slice(0, 10) + ".html"; document.body.appendChild(l); l.click(); l.remove();
   } catch (e) { $("alerts").innerHTML = alertBox("err", "Could not save the report file", ["Use 'Print or save as PDF' instead, or try again in another browser."]); }
 };
+if (WB_URL) { $("openWb").href = WB_URL; $("openWb").hidden = false; $("signinNote").hidden = false; }
 const HAS_XLSX = typeof XLSX !== "undefined";
 if (!HAS_XLSX) ld.hidden = true;
 if (SNAP) { if (safeRender(SNAP, "") && HAS_XLSX) $("alerts").insertAdjacentHTML("afterbegin", alertBox("warn", "Showing the plans saved when this report was made", ["Choose your own HomeLoan_Tracker.xlsx above to see your plans."])); }
